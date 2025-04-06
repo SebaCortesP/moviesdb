@@ -32,10 +32,13 @@ public class MovieService {
         }
     }
     
-    public void deleteMovie(Long id){
+    public Optional<?> deleteMovie(Long id){
         Boolean existMovie = movieRepository.existsById(id);
         if(existMovie){
             movieRepository.deleteById(id);
+            return Optional.of("Deleted");
+        }else{
+            return Optional.empty();
         }
     }
 

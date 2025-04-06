@@ -5,10 +5,9 @@ import com.moviesdb.moviesapp.models.Movie;
 import com.moviesdb.moviesapp.services.MovieService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
@@ -23,8 +22,14 @@ public class MovieController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Movie> getMovieById(@PathVariable Long id) {
-        return movieService.getMovieById(id);
+    public ResponseEntity<?> getMovieById(@PathVariable Long id) {
+        Optional<Movie> movie = movieService.getMovieById(id);
+
+        if (movie.isPresent()) {
+            return ResponseEntity.ok(movie.get());
+        } else {
+            return ResponseEntity.status(404).body("Movie with ID " + id + " not found"); 
+        }
     }
 
     @PostMapping("/store")
@@ -33,14 +38,28 @@ public class MovieController {
     }
 
     @PutMapping("/update/{id}")
-    public Optional<Movie> updateMovie(@PathVariable Long id, @RequestBody Movie movie ) {
-        return movieService.updateMovie(id,movie);
+    public ResponseEntity<?> updateMovie(@PathVariable Long id, @RequestBody Movie movie) {
+        Optional<Movie> updated = movieService.updateMovie(id, movie);
+
+        if (updated.isPresent()) {
+            return ResponseEntity.ok(updated.get());
+        } else {
+            return ResponseEntity.status(404).body("Movie with ID " + id + " not found");
+        }
     }
-    
+
     @DeleteMapping("/delete/{id}")
-    public void deleteMovie(@PathVariable Long id ) {
-        movieService.deleteMovie(id);
+    public ResponseEntity<?> deleteMovie(@PathVariable Long id) {
+        Optional<?> result = movieService.deleteMovie(id);
+
+        if (result.isPresent()) {
+            return ResponseEntity.status(201).body("Movie with ID " + id + " has been deleted");
+        } else {
+            return ResponseEntity.status(404).body("Movie with ID " + id + " not found");
+
+        }
     }
+
     
 }
 
